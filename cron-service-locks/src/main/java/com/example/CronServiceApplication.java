@@ -141,12 +141,14 @@ class HookPinger implements CommandLineRunner {
 					restTemplate.exchange(hook.getUri(), hook.getMethod(), null,
 							Map.class);
 					updateVersion(hook, version);
-				} else {
+				}
+				else {
 					logger.info("Missed: lock not taken");
 				}
 			}
 			catch (Exception e) {
-				// Don't care
+				// Don't care (even if it's InterruptedException, no one is blocking
+				// upstream waiting for an interrupt).
 				logger.info("Missed: " + e.getMessage());
 			}
 			finally {
@@ -161,13 +163,14 @@ class HookPinger implements CommandLineRunner {
 
 	private void checkVersion(Hook hook, long version) {
 		Hook check = repository.findOne(hook.getId());
-		if (check.getVersion()!=version) {
-			throw new RuntimeException("Version does not match: expected " + version + " but found " + check.getVersion());
+		if (check.getVersion() != version) {
+			throw new RuntimeException("Version does not match: expected " + version
+					+ " but found " + check.getVersion());
 		}
 	}
 
 	private void updateVersion(Hook hook, long version) {
-		hook.setVersion(version+1);
+		hook.setVersion(version + 1);
 		repository.save(hook);
 	}
 
@@ -199,7 +202,7 @@ class Hook {
 	private String uri;
 
 	private HttpMethod method = HttpMethod.POST;
-	
+
 	private long version = 0L;
 
 	public long getVersion() {
