@@ -8,11 +8,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.Version;
 import javax.transaction.Transactional;
 
@@ -31,7 +29,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.example.Execution.State;
+import com.example.Hook.State;
 
 @SpringBootApplication
 public class CronServiceOptimistApplication {
@@ -122,13 +120,12 @@ class HookPinger implements CommandLineRunner {
 
 	private Runnable getTask(Long id) {
 		return () -> {
-			Execution execution = null;
+			Hook hook = null;
 			try {
-				execution = service.start(id);
-				Hook hook = execution.getHook();
+				hook = service.start(id);
 				logger.info("Pinging: " + hook);
 				restTemplate.exchange(hook.getUri(), hook.getMethod(), null, Map.class);
-				execution.setState(State.COMPLETE);
+				hook.setState(State.COMPLETE);
 			}
 			catch (AlreadyRunningException e) {
 				logger.info(e.getMessage());
@@ -136,13 +133,13 @@ class HookPinger implements CommandLineRunner {
 			catch (Exception e) {
 				// Don't care
 				logger.info("Missed: " + e.getMessage());
-				if (execution != null) {
-					execution.setState(State.FAILED);
+				if (hook != null) {
+					hook.setState(State.FAILED);
 				}
 			}
 			finally {
 				try {
-					service.update(execution, id);
+					service.update(hook, id);
 				}
 				catch (Exception e) {
 					// Don't care
@@ -167,34 +164,29 @@ class AlreadyRunningException extends RuntimeException {
 class HookService {
 
 	private final HookRepository hooks;
-	private final ExecutionRepository executions;
 
-	public HookService(HookRepository hooks, ExecutionRepository executions) {
+	public HookService(HookRepository hooks) {
 		this.hooks = hooks;
-		this.executions = executions;
 	}
 
-	public Execution update(Execution execution, Long id) {
-		if (execution != null) {
-			execution.setTimestamp(System.currentTimeMillis());
-			return executions.save(execution);
+	public Hook update(Hook hook, Long id) {
+		if (hook != null) {
+			return hooks.save(hook);
 		} else {
-			Hook hook = hooks.findOne(id);
+			hook = hooks.findOne(id);
 			hook.setState(State.FAILED);
 			hooks.save(hook);
 		}
 		return null;
 	}
 
-	public Execution start(Long id) {
+	public Hook start(Long id) {
 		Hook hook = hooks.findOne(id);
 		if (hook.getState() == State.RUNNING) {
 			throw new RuntimeException("Already running");
 		}
-		Execution execution = hook.execute();
-		execution.setTimestamp(System.currentTimeMillis());
-		execution.setState(State.RUNNING);
-		return executions.save(execution);
+		hook.setState(State.RUNNING);
+		return hooks.save(hook);
 	}
 
 }
@@ -203,65 +195,12 @@ class HookService {
 interface HookRepository extends PagingAndSortingRepository<Hook, Long> {
 }
 
-@RepositoryRestResource
-interface ExecutionRepository extends PagingAndSortingRepository<Execution, Long> {
-}
-
 @Entity
-class Execution {
+class Hook {
 
 	enum State {
 		COMPLETE, RUNNING, FAILED;
 	}
-
-	private State state = State.COMPLETE;
-
-	@ManyToOne(optional = false, cascade = CascadeType.ALL)
-	private Hook hook;
-
-	@Id
-	@GeneratedValue
-	private Long id;
-
-	private long timestamp = 0L;
-
-	@SuppressWarnings("unused")
-	private Execution() {
-	}
-
-	public Execution(Hook hook) {
-		this.hook = hook;
-	}
-
-	public long getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	public Hook getHook() {
-		return hook;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public State getState() {
-		return state;
-	}
-
-	public void setState(State state) {
-		hook.setState(state);
-		this.state = state;
-	}
-
-}
-
-@Entity
-class Hook {
 
 	private State state = State.COMPLETE;
 
@@ -314,10 +253,6 @@ class Hook {
 
 	public HttpMethod getMethod() {
 		return method;
-	}
-
-	public Execution execute() {
-		return new Execution(this);
 	}
 
 	public void setMethod(HttpMethod method) {

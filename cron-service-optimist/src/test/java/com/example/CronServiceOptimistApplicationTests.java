@@ -1,5 +1,7 @@
 package com.example;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import javax.transaction.Transactional;
 
 import org.junit.Test;
@@ -15,15 +17,11 @@ public class CronServiceOptimistApplicationTests {
 	@Autowired
 	private HookRepository hooks;
 
-	@Autowired
-	private ExecutionRepository executions;
-
 	@Test
 	@Transactional
 	public void contextLoads() {
 		Hook hook = hooks.findOne(1L);
-		Execution execution = hook.execute();
-		executions.save(execution);
+		assertThat(hook).isNotNull();
 	}
 
 }
