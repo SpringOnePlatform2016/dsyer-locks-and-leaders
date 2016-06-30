@@ -132,9 +132,11 @@ class HookPinger implements CommandLineRunner {
 			}
 			catch (Exception e) {
 				// Don't care
-				logger.info("Missed: " + e.getMessage());
 				if (hook != null) {
 					hook.setState(State.FAILED);
+					logger.info("Failed: " + hook + " (" + e.getMessage() + ")");
+				} else {
+					logger.info("Missed: " + e.getMessage());
 				}
 			}
 			finally {
@@ -183,7 +185,7 @@ class HookService {
 	public Hook start(Long id) {
 		Hook hook = hooks.findOne(id);
 		if (hook.getState() == State.RUNNING) {
-			throw new RuntimeException("Already running");
+			throw new RuntimeException("Already running: " + hook);
 		}
 		hook.setState(State.RUNNING);
 		return hooks.save(hook);
