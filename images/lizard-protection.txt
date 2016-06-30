@@ -1,0 +1,12 @@
+
+Client1->+LockService: getLock
+Client1->+StorageService: read(33)
+Client1-->+Client1: GC start
+LockService->-Client1: expire
+Client2->+LockService: getLock
+Client2->StorageService: read(33)
+Client2->StorageService: write(34)
+StorageService->Client2: ok
+Client1-->-Client1: GC end
+Client1->StorageService: write(34)
+StorageService->-Client1: fail

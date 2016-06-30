@@ -1,0 +1,15 @@
+title Writing Stale Data
+
+Client1->+LockService: getLock
+LockService->Client1: lock
+Client1-->+Client1: GC start
+LockService->-Client1: expire
+Client2->+LockService: getLock
+LockService->Client2: lock
+Client2->+StorageService: write
+StorageService->-Client2: ok
+Client1-->-Client1: GC end
+Client1->+StorageService: write
+note over StorageService: stale data
+StorageService->-Client1: ok
+
