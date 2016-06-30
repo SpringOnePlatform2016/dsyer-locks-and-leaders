@@ -1,0 +1,12 @@
+participant Client1
+participant Client2
+Client1->StorageService: read
+Client2->StorageService: read
+Client1->StorageService: starting
+Client1->Webhook: ping
+Client1->+StorageService: success
+StorageService->-Client1: ok
+Client2->StorageService: starting
+Client2->Webhook: ping
+Client2->+StorageService: success
+StorageService->-Client2: ok

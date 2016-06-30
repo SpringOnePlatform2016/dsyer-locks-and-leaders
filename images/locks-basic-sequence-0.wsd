@@ -1,0 +1,5 @@
+Client1->StorageService: read
+Client1->StorageService: starting
+Client1->Webhook: ping
+Client1->+StorageService: success
+StorageService->-Client1: ok
