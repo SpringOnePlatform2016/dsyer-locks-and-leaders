@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    schema: classpath:org/springframework/integration/jdbc/schema-${spring.datasource.platform}.sql
+    continue-on-error: true
+    platform: ${DATABASE_PLATFORM:${vcap.services.mysql.name:h2}}
+  jpa:
+    generate-ddl: false
+  h2:
+    console:
+      enabled: true
