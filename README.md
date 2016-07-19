@@ -6,7 +6,7 @@ theme: spring
 # Locks and Leaders with Spring Integration
 
 Dave Syer, 2016  
-Twitter: @david_syer  
+Twitter: @david_syer (see also @artem_bilan, @gprussell)  
 Email: `dsyer@pivotal.io`
 
 ## Agenda
@@ -112,11 +112,11 @@ try {
 
 ## Locks and Leases
 
-A distributed lock nearly almost has a shelf life (it expires).
+A distributed lock nearly always has a shelf life (it expires).
 
 Technically, that makes it a "lease".
 
-You need the expiry in order to make progress when a lock holder dies.
+Without expiry system can't make progress when a lock holder dies.
 
 ## Gotcha
 
@@ -173,8 +173,7 @@ What can you do with it?
 
 * sequences
 * message aggregation
-* webhooks
-* cron service
+* scheduling, e.g. cron service
 
 ## Spring Integration: Leader Initiator
 
@@ -183,7 +182,7 @@ election and fire events on granted and revoked.
 
 * Zookeeper
 * Hazelcast
-* Etcd
+* Etcd(*)
 * Generic (lock-based)
 
 For a user it looks like this (create a new bean which is a `SmartLifecycle`):
@@ -195,6 +194,8 @@ public LeaderInitiator leaderInitiator(CuratorFramework client,
   return new LeaderInitiator(client, candidate);
 }
 ```
+
+(*) No support for etcd v3. Probably dead.
 
 ## Spring Integration: Callbacks
 
