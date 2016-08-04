@@ -8,13 +8,13 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>cron-service</name>
+	<name>cron-service-locks</name>
 	<description>Demo</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.4.0.BUILD-SNAPSHOT</version>
+		<version>1.4.0.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 

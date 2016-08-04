@@ -8,13 +8,13 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>cron-service</name>
+	<name>cron-service-leader</name>
 	<description>Demo</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.4.0.BUILD-SNAPSHOT</version>
+		<version>1.4.0.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -121,7 +121,7 @@
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>Brixton.BUILD-SNAPSHOT</version>
+				<version>Brixton.SR4</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
