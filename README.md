@@ -130,6 +130,8 @@ Without expiry system can't make progress when a lock holder dies.
 
 TL;DR If using a lock for "correctness" not "efficiency" be *very* careful.
 
+## Public Service Announcement
+
 > Important: you can tune the system to adjust the probability, or how
 > long it lasts, but fundamentally you cannot prevent the system from
 > ever allowing more than one holder of a lock.
