@@ -31,6 +31,7 @@ import org.springframework.integration.leader.Candidate;
 import org.springframework.integration.leader.Context;
 import org.springframework.integration.leader.DefaultCandidate;
 import org.springframework.integration.leader.event.DefaultLeaderEventPublisher;
+import org.springframework.integration.support.leader.LockRegistryLeaderInitiator;
 import org.springframework.integration.support.locks.DefaultLockRegistry;
 import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
